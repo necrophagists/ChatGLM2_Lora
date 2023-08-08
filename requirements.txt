@@ -1,0 +1,6 @@
+torch
+peft
+datasets
+torchkeras
+accelerator
+transformers
