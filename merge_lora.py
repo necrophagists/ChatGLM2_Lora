@@ -19,13 +19,6 @@ tokenizer =AutoTokenizer.from_pretrained(
     base_model_path,trust_remote_code=True
 )
 
-base_model_vocab_size =base_model.get_input_embeddings().weight.size(0)
-
-print(base_model_vocab_size,len(tokenizer))
-if base_model_vocab_size != len(tokenizer):
-    base_model.resize_token_embeddings(len(tokenizer))
-    ##！！！！！！！这里可能需要修改chatglm2 源码 看readme
-
 lora_model =PeftModel.from_pretrained(
     base_model,
     lora_model_path,
