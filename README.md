@@ -4,15 +4,25 @@ This repo was  a simple  way to implement Lora to fine-tuning ChatGLM2.
 
 这个项目是用LORA微调chatglm2的简单实现。
 
-##2023/08/08
-需要修改chatglm2的modeling_chatglm.py
-第768行加上一个函数:
+##2023/08/09
+数据格式
+{
+ {"input":"AAAAA",
+  "output":"BBBBB"
+ },
+  {"input":"CCCCC",
+   "output":"DDDDD"
+  }
+}
 
-```python
-def set_input_embddings(self,values):
-   self.embedding.word_embeddings =values
-```
 
+# To Do List
+
+- 奖励模型
+- RLHF
+- P-tuning
+- LLAMA2
+   
 
 
 
