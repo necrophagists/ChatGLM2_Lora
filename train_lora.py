@@ -17,7 +17,7 @@ def main():
     parser.add_argument("--base_llm_path",default=None,type=str,required=True)
     parser.add_argument("--output_dir",default=None,type=str,required=True)
 
-    parser.add_argument("--stf_mode",default=None,type=str,required=True)
+    parser.add_argument("--sft_mode",default=None,type=str,required=True)
     parser.add_argument("--lora_r",default=4,type=int,required=False)
     parser.add_argument("--lora_alpha", default=32, type=int, required=False)
     parser.add_argument("--lora_drouout", default=0.05, type=float, required=False)
@@ -25,6 +25,7 @@ def main():
     parser.add_argument("--lr", default=5e-4, type=float, required=False)
     parser.add_argument("--batch_size", default=2, type=float, required=False)
     parser.add_argument("--max_seq_len",default=2048,type=int,required=False)
+    parser.add_argument("--epochs", default=3, type=int, required=False)
 
 
     args =parser.parse_args()
@@ -69,7 +70,7 @@ def main():
     print("finish config keras model")
     keras_model.fit(train_data=train_loader,
                     val_data=test_loader,
-                    epochs=conf.epochs,
+                    epochs=args.epochs,
                     monitor='train_loss',
                     mode='mean',
                     ckpt_path=args.output_dir,
