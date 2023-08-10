@@ -71,8 +71,8 @@ def main():
     keras_model.fit(train_data=train_loader,
                     val_data=test_loader,
                     epochs=args.epochs,
-                    monitor='train_loss',
-                    mode='mean',
+                    monitor='val_loss',
+                    mode='min',
                     ckpt_path=args.output_dir,
                     mixed_precision='fp16')
     print("finish lora training!!!")
