@@ -7,7 +7,7 @@ class StepRunner:
         self.optimizer,self.lr_scheduler =optimizer,lr_scheduler
         self.accelerator =accelerator if accelerator is not None else Accelerator()
 
-        if self.stage =="trian":
+        if self.stage =="train":
             self.model.train()
         else:
             self.model.eval()
