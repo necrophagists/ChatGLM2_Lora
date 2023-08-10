@@ -4,30 +4,26 @@ import json
 import datasets
 from datasets import load_dataset
 from typing import Dict,List
-
-from Config import Config
-conf =Config()
+from functools import partial
 
 
-llm_file_path ="xxx"
-tokenizer =AutoTokenizer.from_pretrained(llm_file_path,trust_remote_code=True)
-max_seq_length =2048    #max length of input or output   for padding
+
 skip_over_length =True  #skip the string that over length
 
 
-def str2ids(sample:Dict) ->Dict:
+def str2ids(sample:Dict,tokenizer,max_seq_len) ->Dict:
     context =sample['input']
     output =sample['output']
 
     context_ids =tokenizer.encode(
         context,
-        max_length =max_seq_length,
+        max_length =max_seq_len,
         truncation =True   # keep maxium length <=max_Seq_length
     )
 
     output_ids =tokenizer.encode(
         output,
-        max_length =max_seq_length,
+        max_length =max_seq_len,
         truncation =True   # keep maxium length <=max_Seq_length
     )
 
@@ -35,7 +31,7 @@ def str2ids(sample:Dict) ->Dict:
 
     return {"input_ids":input_ids,"context_len":len(context_ids),"output_len":len(output_ids)}
 
-def collate_fn(batch_data:List):
+def collate_fn(batch_data:List,tokenizer):
     batch_seq_len =[len(data["input_ids"]) for data in batch_data]
     max_batch_seq_len =max(batch_seq_len)
 
@@ -79,18 +75,22 @@ def load_json_data(file_path:str):
 
     return datasets.Dataset.from_list(dataset)
 
-def get_dataloader(train_dataset,test_dataset):
-    train_ds =train_dataset.map(str2ids).select_columns(['input_ids','context_len','output_len'])
+def get_dataloader(train_dataset,test_dataset,tokenizer_path,bs,max_seq_len):
+    tokenizer =AutoTokenizer.from_pretrained(tokenizer_path,trust_remote_code=True)
+    part_func1 =partial(str2ids,tokenizer=tokenizer,max_seq_len=max_seq_len)
+
+    train_ds =train_dataset.map(part_func1).select_columns(['input_ids','context_len','output_len'])
     if skip_over_length ==True:      #过滤超过max_length的句子
         train_ds =train_ds.filter(
-            lambda x:x['context_len']<max_seq_length and x['output_len']<max_seq_length
+            lambda x:x['context_len']<max_seq_len and x['output_len']<max_seq_len
         )
-    train_loader =torch.utils.data.DataLoader(train_ds,batch_size =conf.bs,num_workers=2,pin_memory=True,shuffle=True,collate_fn=collate_fn)
+    part_func2 =partial(collate_fn,tokenizer=tokenizer)
+    train_loader =torch.utils.data.DataLoader(train_ds,batch_size =bs,num_workers=2,pin_memory=True,shuffle=True,collate_fn=part_func2)
 
     test_ds =test_dataset.map(str2ids).select_columns(['input_ids','context_len','output_len'])
     if skip_over_length ==True:      #过滤超过max_length的句子
         test_ds =test_ds.filter(
-            lambda x:x['context_len']<max_seq_length and x['output_len']<max_seq_length
+            lambda x:x['context_len']<max_seq_len and x['output_len']<max_seq_len
         )
-    test_loader =torch.utils.data.DataLoader(test_ds,batch_size =conf.bs,num_workers=2,pin_memory=True,shuffle=True,collate_fn=collate_fn)
+    test_loader =torch.utils.data.DataLoader(test_ds,batch_size =bs,num_workers=2,pin_memory=True,shuffle=True,collate_fn=part_func2)
     return train_loader,test_loader
