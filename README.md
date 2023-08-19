@@ -1,4 +1,4 @@
-# ChatGLM2_Lora_Simplified
+# ChatGLM2_Lora
 
 This repo was  a simple  way to implement Lora to fine-tuning ChatGLM2.
 
