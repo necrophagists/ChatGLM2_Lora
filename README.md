@@ -6,14 +6,14 @@ This repo was  a simple  way to implement Lora to fine-tuning ChatGLM2.
 
 ##2023/08/09
 数据格式
-{
+[
  {"input":"AAAAA",
   "output":"BBBBB"
  },
   {"input":"CCCCC",
    "output":"DDDDD"
   }
-}
+]
 
 # 使用方式
 ## lora:
