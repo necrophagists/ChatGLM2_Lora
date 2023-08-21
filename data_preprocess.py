@@ -87,7 +87,7 @@ def get_dataloader(train_dataset,test_dataset,tokenizer_path,bs,max_seq_len):
     part_func2 =partial(collate_fn,tokenizer=tokenizer)
     train_loader =torch.utils.data.DataLoader(train_ds,batch_size =bs,num_workers=2,pin_memory=True,shuffle=True,collate_fn=part_func2)
 
-    test_ds =test_dataset.map(str2ids).select_columns(['input_ids','context_len','output_len'])
+    test_ds =test_dataset.map(part_func2).select_columns(['input_ids','context_len','output_len'])
     if skip_over_length ==True:      #过滤超过max_length的句子
         test_ds =test_ds.filter(
             lambda x:x['context_len']<max_seq_len and x['output_len']<max_seq_len
